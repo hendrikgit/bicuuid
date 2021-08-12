@@ -1,5 +1,5 @@
 # Package
-version       = "0.1.1"
+version       = "0.1.2"
 author        = "Hendrik Albers"
 description   = "Add uuids to bic files"
 license       = "MIT"
