@@ -10,25 +10,26 @@ if paramCount() == 0:
   echo "Provide paths to bic files as arguments"
   quit(QuitSuccess)
 
-var bics = newSeq[(string, GffRoot)]()
-for p in commandLineParams():
-  if not fileExists(p):
-    echo &"File \"{p}\" not found"
+for fn in commandLineParams():
+  if not fileExists(fn):
+    echo &"File \"{fn}\" not found"
     quit(QuitFailure)
-  bics &= (p, p.toBicGffRoot)
-
-for (fn, bic) in bics:
+  let bic = fn.toBicGffRoot
   var uuid = bic["UUID", "".GffCExoString]
   let existing = uuid != ""
   if not existing:
     uuid = getUUID()
     bic["UUID", GffCExoString] = uuid
-    fn.openFileStream(mode = fmWrite).write(bic)
+    let fs = fn.openFileStream(mode = fmWrite)
+    fs.write(bic)
+    fs.close
   echo &"{fn} : {bic.name} : {uuid} : " & (if existing: "existing" else: "generated")
 
 proc toBicGffRoot(filename: string): GffRoot =
   try:
-    result = filename.openFileStream.readGffRoot(false)
+    let fs = filename.openFileStream
+    result = fs.readGffRoot(false)
+    fs.close
   except ValueError:
     echo &"File \"{filename}\" ist not a GFF file"
     quit(QuitFailure)
