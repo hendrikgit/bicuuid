@@ -10,3 +10,4 @@ bin           = @["bicuuid"]
 # Dependencies
 requires "nim >= 1.4.8"
 requires "neverwinter >= 1.4.4"
+requires "https://github.com/hendrikgit/nim-uuidv4#0.1.0"

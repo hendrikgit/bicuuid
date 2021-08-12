@@ -1,5 +1,6 @@
 import os, streams, strformat, tables
 import neverwinter/gff
+import uuidv4
 
 proc toBicGffRoot(filename: string): GffRoot
 proc name(bic: GffRoot): string
@@ -17,7 +18,13 @@ for p in commandLineParams():
   bics &= (p, p.toBicGffRoot)
 
 for (fn, bic) in bics:
-  echo &"{fn}: {bic.name}"
+  var uuid = bic["UUID", "".GffCExoString]
+  let existing = uuid != ""
+  if not existing:
+    uuid = getUUID()
+    bic["UUID", GffCExoString] = uuid
+    fn.openFileStream(mode = fmWrite).write(bic)
+  echo &"{fn} : {bic.name} : {uuid} : " & (if existing: "existing" else: "generated")
 
 proc toBicGffRoot(filename: string): GffRoot =
   try:
