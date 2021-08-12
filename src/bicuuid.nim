@@ -39,10 +39,12 @@ proc toBicGffRoot(filename: string): GffRoot =
 
 proc name(bic: GffRoot): string =
   let first = bic["FirstName", GffCExoLocString].get
+  let last = bic["LastName", GffCExoLocString].get
   if first != "":
-    first & " " & bic["LastName", GffCExoLocString].get
+    result = first
+    if last != "": result &= " " & last
   else:
-    first
+    if last != "": result = last
 
 proc get(locstring: GffCExoLocString, lang: Language = Language.English): string =
   locstring.entries.getOrDefault(ord(lang), locstring.entries.getOrDefault(ord(Language.English)))
