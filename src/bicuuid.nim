@@ -7,12 +7,12 @@ proc name(bic: GffRoot): string
 proc get(locstring: GffCExoLocString, lang: Language = Language.English): string
 
 if paramCount() == 0:
-  echo "Provide paths to bic files as arguments"
+  stderr.writeLine "Provide paths to bic files as arguments"
   quit(QuitSuccess)
 
 for fn in commandLineParams():
   if not fileExists(fn):
-    echo &"File \"{fn}\" not found"
+    stderr.writeLine &"File \"{fn}\" not found"
     quit(QuitFailure)
   let bic = fn.toBicGffRoot
   var uuid = bic["UUID", "".GffCExoString]
@@ -23,7 +23,7 @@ for fn in commandLineParams():
     let fs = fn.openFileStream(mode = fmWrite)
     fs.write(bic)
     fs.close
-  echo &"{fn} : {bic.name} : {uuid} : " & (if existing: "existing" else: "generated")
+  echo &"\"{fn}\",\"{bic.name}\",{uuid}," & (if existing: "existing" else: "generated")
 
 proc toBicGffRoot(filename: string): GffRoot =
   try:
@@ -31,10 +31,10 @@ proc toBicGffRoot(filename: string): GffRoot =
     result = fs.readGffRoot(false)
     fs.close
   except ValueError:
-    echo &"File \"{filename}\" ist not a GFF file"
+    stderr.writeLine &"File \"{filename}\" ist not a GFF file"
     quit(QuitFailure)
   if result.fileType != "BIC ":
-    echo &"File \"{filename}\" ist not a BIC file"
+    stderr.writeLine &"File \"{filename}\" ist not a BIC file"
     quit(QuitFailure)
 
 proc name(bic: GffRoot): string =
